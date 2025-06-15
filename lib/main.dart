@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'model/player.dart';
+import 'package:speedy_poker/page/game_page.dart';
 import 'model/game.dart';
 import 'model/socket.dart';
-import 'page/home_page.dart';
 
 void main() {
-
   SocketService socket = SocketService();
   runApp(
-      MultiProvider(
-          providers:[
-            Provider(create: (context) => socket),
-            ChangeNotifierProvider(create: (context) => Player()),
-            ChangeNotifierProvider(create: (context) => Game()),
-          ],
-          child: const SpeedyPoker(),
-      ),
+    MultiProvider(
+      providers: [
+        Provider(create: (context) => socket),
+        ChangeNotifierProvider<Game>(
+          create: (context) => Game(),
+        ),
+      ],
+      child: const SpeedyPokerGamePage(gameCode: 1),
+    ),
   );
 }
-
