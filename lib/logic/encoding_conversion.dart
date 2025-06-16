@@ -38,5 +38,5 @@ String createCardSVGPath(int card) {
     faceValueNum[FaceValue.values[i]] = faceValueNums[i];
   }
   String cardNum = faceValueNum[FaceValue.values[getFaceValue(card)]]??cardBackSVGPath;
-  return "$cardsPrefixPath${Suit.values[getSuitValue(card)].name.toUpperCase()}-$cardNum.svg";
+  return "$cardsPrefixPath${Suit.values[getSuitValue(card)].name.toUpperCase()}-$cardNum.jpg";
 }
