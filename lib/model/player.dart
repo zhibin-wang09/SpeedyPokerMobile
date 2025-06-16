@@ -1,8 +1,8 @@
 import 'package:speedy_poker/enums/player_id.dart';
 
 class Player{
-  List<int> drawPile = [];
-  List<int> hand = [];
+  List<int> drawPile = [1,2,3,4];
+  List<int> hand = [1,2,3,4];
   PlayerId playerID = PlayerId.def;
   String socketID = '';
   String name = '';

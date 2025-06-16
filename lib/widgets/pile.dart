@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:speedy_poker/widgets/card.dart' as playingCard;
+import 'package:speedy_poker/widgets/card.dart' as playing_card;
 
-class Hand extends StatelessWidget {
+class Pile extends StatelessWidget {
   final List<int> cards;
+  final double padding;
+  final bool isFlipped;
 
-  const Hand({super.key, required this.cards});
+  const Pile({super.key, required this.cards, required this.padding, required this.isFlipped});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center ,
-      children: cards.map((c) => playingCard.Card(cardNumber: c)).toList(),
-    );
+    return playing_card.Card(cardNumber: cards[0], padding: padding, isFlipped: isFlipped,);
   }
 }
