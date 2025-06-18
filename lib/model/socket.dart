@@ -19,7 +19,7 @@ class SocketService {
     );
 
     socket.onConnect((_) {
-      print('Connected to Socket.IO');
+      print('Connected to server ${socket.id}');
     });
 
     socket.onConnectError((err) => print('Connect Error: $err'));
