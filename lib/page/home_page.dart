@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:speedy_poker/model/game.dart';
 import 'package:speedy_poker/model/socket.dart';
 import 'package:speedy_poker/page/waiting_page.dart';
 
@@ -42,9 +43,12 @@ class SpeedyPokerHomePage extends StatefulWidget {
 // The state for SpeedyPokerHomePage widget
 // contains form, two input fields, and a submission button
 class _SpeedyPokerHomePageState extends State<SpeedyPokerHomePage> {
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>(); // form key for the overall form
-  final TextEditingController roomIdController = TextEditingController(); // controller to monitor input change in first input field
-  final TextEditingController nameController = TextEditingController(); // controller for the second input field
+  final GlobalKey<FormState> _formkey =
+      GlobalKey<FormState>(); // form key for the overall form
+  final TextEditingController roomIdController =
+      TextEditingController(); // controller to monitor input change in first input field
+  final TextEditingController nameController =
+      TextEditingController(); // controller for the second input field
 
   @override
   void dispose() {
@@ -101,17 +105,21 @@ class _SpeedyPokerHomePageState extends State<SpeedyPokerHomePage> {
                       if (_formkey.currentState!.validate()) {
                         int roomID = int.parse(roomIdController.text);
                         String playerName = nameController.text;
+
+                        final Game game = Provider.of<Game>(context, listen: false);
+                        game.setRoomID = roomID;
+
                         // join the game room
-                        socketService.emit('joinGameRoom', {
-                          roomID,
-                          playerName,
-                        });
-                        SocketService().socket.on('receivedRoomID', (_) {
+                        socketService.emit('joinGameRoom', [
+                          {'roomID': roomID, 'playerName': playerName},
+                        ]);
+
+                        SocketService().socket.on('receiveRoomID', (roomID) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => SpeedyPokerWaitingPage(
-                                gameCode: int.parse(roomIdController.text),
+                                roomID: int.parse(roomID),
                               ),
                             ),
                           );

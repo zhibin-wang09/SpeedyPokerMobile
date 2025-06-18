@@ -6,9 +6,9 @@ import 'package:speedy_poker/page/game_page.dart';
 // This widget represent the waiting page of the game, where the player is waiting
 // for the second player to join
 class SpeedyPokerWaitingPage extends StatelessWidget {
-  const SpeedyPokerWaitingPage({super.key, required this.gameCode});
+  const SpeedyPokerWaitingPage({super.key, required this.roomID});
 
-  final int gameCode;
+  final int roomID;
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +24,19 @@ class SpeedyPokerWaitingPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  'Your game code is: $gameCode, wait for another player to join',
+                  'Your game code is: $roomID, wait for another player to join',
                   style: TextStyle(fontSize: 12, color: Colors.white),
                 ),
                 Consumer<SocketService>(
                   builder: (context, socketService, child){
-                    socketService.emit('onPlayerReady', gameCode);
+                    socketService.emit('onPlayerReady', [roomID]);
+                    
                     SocketService().socket.on('startGameSession', (_){
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => SpeedyPokerGamePage(
-                            gameCode: gameCode,
+                            roomID: roomID,
                           ),
                         ),
                       );
