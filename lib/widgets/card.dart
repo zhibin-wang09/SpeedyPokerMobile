@@ -6,12 +6,14 @@ class Card extends StatelessWidget {
   final int cardNumber;
   final double padding;
   final bool isFlipped;
+  final Function(int) onTap;
 
   const Card({
     super.key,
     required this.cardNumber,
     required this.padding,
     required this.isFlipped,
+    required this.onTap,
   });
 
   @override
@@ -19,15 +21,25 @@ class Card extends StatelessWidget {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.all(padding),
-        child: isFlipped
-            ? FittedBox(
-              fit: BoxFit.contain,
-              child: Image(image: AssetImage(cardBackSVGPath)),
-            )
-            : FittedBox(
-              fit: BoxFit.contain,
-              child: Image(image: AssetImage(createCardSVGPath(cardNumber))),
-            )
+        child: Hero(
+          tag: cardNumber,
+          child: Material(
+            child: InkWell(
+              onTap: () => onTap(cardNumber),
+              child: isFlipped
+                  ? FittedBox(
+                      fit: BoxFit.contain,
+                      child: Image(image: AssetImage(cardBackSVGPath)),
+                    )
+                  : FittedBox(
+                      fit: BoxFit.contain,
+                      child: Image(
+                        image: AssetImage(createCardSVGPath(cardNumber)),
+                      ),
+                    ),
+            ),
+          ),
+        ),
       ),
     );
   }

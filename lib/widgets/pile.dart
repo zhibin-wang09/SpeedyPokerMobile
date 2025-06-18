@@ -6,10 +6,22 @@ class Pile extends StatelessWidget {
   final double padding;
   final bool isFlipped;
 
-  const Pile({super.key, required this.cards, required this.padding, required this.isFlipped});
+  const Pile({
+    super.key,
+    required this.cards,
+    required this.padding,
+    required this.isFlipped,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return playing_card.Card(cardNumber: cards[0], padding: padding, isFlipped: isFlipped,);
+    return cards.isNotEmpty
+        ? playing_card.Card(
+            cardNumber: cards[0],
+            padding: padding,
+            isFlipped: isFlipped,
+            onTap: (int cardNumber) {},
+          )
+        : const SizedBox.shrink();
   }
 }

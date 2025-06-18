@@ -7,6 +7,7 @@ class Hand extends StatelessWidget {
   final List<int> drawPile;
   final double padding;
   final bool isFlipped;
+  final Function(int) onTap;
 
   const Hand({
     super.key,
@@ -14,6 +15,7 @@ class Hand extends StatelessWidget {
     required this.drawPile,
     required this.padding,
     required this.isFlipped,
+    required this.onTap,
   });
 
   @override
@@ -22,13 +24,21 @@ class Hand extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       textDirection: TextDirection.ltr,
       children:
+          hand
+              .map(
+                (c) =>
+                    player_card.Card(
+                          cardNumber: c,
+                          padding: padding,
+                          isFlipped: isFlipped,
+                          onTap: onTap,
+                        )
+                        as Widget,
+              )
+              .toList() +
           <Widget>[
-            player_card.Card(cardNumber: hand[0], padding: padding, isFlipped: isFlipped,),
-            player_card.Card(cardNumber: hand[1], padding: padding, isFlipped: isFlipped,),
-            player_card.Card(cardNumber: hand[2], padding: padding, isFlipped: isFlipped,),
-            player_card.Card(cardNumber: hand[3], padding: padding, isFlipped: isFlipped,),
-            Pile(cards: drawPile, padding: padding, isFlipped: !isFlipped),
-          ]
+            Pile(cards: drawPile, padding: padding, isFlipped: true),
+          ],
     );
   }
 }
