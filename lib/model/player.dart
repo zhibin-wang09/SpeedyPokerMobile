@@ -1,44 +1,70 @@
-import 'package:flutter/material.dart';
 import 'package:speedy_poker/enums/player_id.dart';
 
-class Player extends ChangeNotifier {
-  List<int> drawPile = [];
-  List<int> hand = [];
-  PlayerID playerID = PlayerID.def;
-  String socketID = '';
-  String name = '';
-  int point = 0;
+class Player {
+  late List<int> _drawPile;
+  late List<int> _hand;
+  late PlayerID _playerID;
+  late String _socketID;
+  late String _name;
+  late int _point;
 
-  set setName(String name) => this.name = name;
+  Player({
+    List<int>? drawPile,
+    List<int>? hand,
+    PlayerID? playerID,
+    String? socketID,
+    String? name,
+    int? point,
+  }) {
+    _drawPile = drawPile ?? [];
+    _hand = hand ?? [];
+    _playerID = playerID ?? PlayerID.def;
+    _socketID = socketID ?? '';
+    _name = name ?? '';
+    _point = point ?? 0;
+  }
 
-  set setDrawPile(List<int> drawPile) => this.drawPile = drawPile;
+  set setName(String name) => _name = name;
 
-  set setHand(List<int> hand) => this.hand = hand;
+  set setDrawPile(List<int> drawPile) => _drawPile = drawPile;
 
-  set setSocketID(String socketID) => this.socketID = socketID;
+  set setHand(List<int> hand) => _hand = hand;
 
-  set setPoint(int point) => this.point = point;
+  set setSocketID(String socketID) => _socketID = socketID;
 
-  set setPlayerID(PlayerID playerID) => this.playerID = playerID;
+  set setPoint(int point) => _point = point;
 
-  get getName => name;
+  set setPlayerID(PlayerID playerID) => _playerID = playerID;
 
-  get getDrawPile => drawPile;
+  String get getName => _name;
 
-  get getHand => hand;
+  List<int> get getDrawPile => _drawPile;
 
-  get getPlayerID => playerID;
+  List<int> get getHand => _hand;
 
-  get getSocketID => socketID;
+  PlayerID get getPlayerID => _playerID;
 
-  get getPoint => point;
+  String get getSocketID => _socketID;
+
+  int get getPoint => _point;
 
   Map<String, dynamic> toJson() => {
-    'hand': hand,
-    'drawPile': drawPile,
-    'name': name,
-    'point': point,
-    'socketID': socketID,
-    'playerID': playerID.index,
+    'hand': _hand,
+    'drawPile': _drawPile,
+    'name': _name,
+    'point': _point,
+    'socketID': _socketID,
+    'playerID': _playerID.index,
   };
+
+  factory Player.fromJson(Map<String, dynamic> json) {
+    return Player(
+      hand: List<int>.from(json['hand']),
+      drawPile: List<int>.from(json['drawPile']),
+      name: json['name'] as String,
+      point: json['point'] as int,
+      socketID: json['socketID'] as String,
+      playerID: PlayerID.values[json['playerID']],
+    );
+  }
 }
