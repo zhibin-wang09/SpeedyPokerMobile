@@ -7,6 +7,8 @@ class Card extends StatelessWidget {
   final double padding;
   final bool isFlipped;
   final Function(int) onTap;
+  final GlobalKey? uniqueKey;
+  final bool useExpanded; // NEW PARAM
 
   const Card({
     super.key,
@@ -14,33 +16,37 @@ class Card extends StatelessWidget {
     required this.padding,
     required this.isFlipped,
     required this.onTap,
+    this.uniqueKey,
+    this.useExpanded = true, // default to true
   });
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(padding),
-        child: Hero(
-          tag: cardNumber,
-          child: Material(
-            child: InkWell(
-              onTap: () => onTap(cardNumber),
-              child: isFlipped
-                  ? FittedBox(
-                      fit: BoxFit.contain,
-                      child: Image(image: AssetImage(cardBackSVGPath)),
-                    )
-                  : FittedBox(
-                      fit: BoxFit.contain,
-                      child: Image(
-                        image: AssetImage(createCardSVGPath(cardNumber)),
-                      ),
-                    ),
-            ),
-          ),
+    final cardWidget = Padding(
+      padding: EdgeInsets.all(padding),
+      child: Material(
+        child: GestureDetector(
+          onTap: () => onTap(cardNumber),
+          child: isFlipped
+              ? FittedBox(
+                  fit: BoxFit.contain,
+                  child: Image(
+                    image: AssetImage(cardBackSVGPath),
+                    key: uniqueKey,
+                  ),
+                )
+              : FittedBox(
+                  fit: BoxFit.contain,
+                  child: Image(
+                    image: AssetImage(createCardSVGPath(cardNumber)),
+                    key: uniqueKey,
+                  ),
+                ),
         ),
       ),
     );
+
+    // Use Expanded only if desired
+    return useExpanded ? Expanded(child: cardWidget) : cardWidget;
   }
 }

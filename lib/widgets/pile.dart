@@ -5,12 +5,14 @@ class Pile extends StatelessWidget {
   final List<int> cards;
   final double padding;
   final bool isFlipped;
+  final GlobalKey? uniqueKey;
 
   const Pile({
     super.key,
     required this.cards,
     required this.padding,
     required this.isFlipped,
+    this.uniqueKey,
   });
 
   @override
@@ -21,6 +23,7 @@ class Pile extends StatelessWidget {
             padding: padding,
             isFlipped: isFlipped,
             onTap: (int cardNumber) {},
+            uniqueKey: uniqueKey,
           )
         : const SizedBox.shrink();
   }

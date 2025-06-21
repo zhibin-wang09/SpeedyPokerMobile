@@ -7,12 +7,14 @@ class UpdatedGameResponse {
   final PlayerID playerTurn;
   final int cardIndex;
   final Destination destination;
+  final int newCard;
 
   UpdatedGameResponse({
     required this.game,
     required this.playerTurn,
     required this.cardIndex,
     required this.destination,
+    required this.newCard,
   });
 
   factory UpdatedGameResponse.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class UpdatedGameResponse {
       playerTurn: PlayerID.values[json['playerTurn']],
       cardIndex: json['cardIndex'] as int,
       destination: Destination.values[json['destination']],
+      newCard: json['newCard'] as int,
     );
   }
 }

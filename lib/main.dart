@@ -9,8 +9,8 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (context) => socket),
-        ChangeNotifierProvider<Game>(create: (context) => Game()),
+        Provider(create: (_) => socket),
+        ChangeNotifierProvider<Game>(create: (_) => Game()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
