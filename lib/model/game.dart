@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:speedy_poker/enums/player_id.dart';
 import 'package:speedy_poker/model/player.dart';
 
 class Game extends ChangeNotifier {

@@ -25,16 +25,25 @@ class Hand extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       textDirection: TextDirection.ltr,
-      children: List.generate(hand.length, (index) {
-        return player_card.Card(
-                          cardNumber: hand[index],
-                          padding: padding,
-                          isFlipped: isFlipped,
-                          onTap: onTap,
-                          uniqueKey: keys[index],
-                        ) as Widget;
-      })+
-          <Widget>[Pile(cards: drawPile, padding: padding, isFlipped: true, uniqueKey: keys[4],)],
+      children:
+          List.generate(hand.length, (index) {
+            return player_card.Card(
+                  cardNumber: hand[index],
+                  padding: padding,
+                  isFlipped: isFlipped,
+                  onTap: onTap,
+                  uniqueKey: keys[index],
+                )
+                as Widget;
+          }) +
+          [
+            Pile(
+              cards: drawPile,
+              padding: padding,
+              isFlipped: true,
+              uniqueKey: keys[4],
+            ),
+          ],
     );
   }
 }

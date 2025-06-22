@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:speedy_poker/enums/animated_card_type.dart';
 import 'package:speedy_poker/enums/destination.dart';
 import 'package:speedy_poker/enums/player_id.dart';
 import 'package:speedy_poker/model/game.dart';
@@ -34,7 +35,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
   Player _localPlayer = Player();
   Player _opponentPlayer = Player();
 
-  List<AnimatingCard> _animatingCards = [];
+  final List<AnimatingCard> _animatingCards = [];
 
   @override
   void initState() {
@@ -145,7 +146,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     final localEnd = globalEnd - stackOffset;
 
     final controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
@@ -162,6 +163,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
               : _opponentPlayer.getHand[cardIndex]),
       animation: animation,
       controller: controller,
+      type: isDraw ? AnimateCardType.draw : AnimateCardType.play,
     );
 
     setState(() => _animatingCards.add(animCard));
@@ -259,7 +261,9 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
                   child: game_card.Card(
                     cardNumber: animCard.cardNumber,
                     padding: 0,
-                    isFlipped: false,
+                    isFlipped: animCard.type == AnimateCardType.draw
+                        ? true
+                        : false,
                     onTap: (_) {},
                     useExpanded: false,
                   ),
