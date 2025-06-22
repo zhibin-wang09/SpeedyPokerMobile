@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:speedy_poker/enums/animated_card_type.dart';
 import 'package:speedy_poker/enums/destination.dart';
@@ -164,6 +165,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
       animation: animation,
       controller: controller,
       type: isDraw ? AnimateCardType.draw : AnimateCardType.play,
+      size: toBox.size,
     );
 
     setState(() => _animatingCards.add(animCard));
@@ -256,8 +258,8 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
                 left: animCard.animation.value.dx,
                 top: animCard.animation.value.dy,
                 child: SizedBox(
-                  width: 60,
-                  height: 90,
+                  width: animCard.size.width,
+                  height: animCard.size.height,
                   child: game_card.Card(
                     cardNumber: animCard.cardNumber,
                     padding: 0,

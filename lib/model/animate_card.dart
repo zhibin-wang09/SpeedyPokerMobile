@@ -7,11 +7,13 @@ class AnimatingCard {
   final Animation<Offset> animation;
   final AnimationController controller;
   final AnimateCardType type;
+  final Size size;
 
   AnimatingCard({
     required this.cardNumber,
     required this.animation,
     required this.controller,
     required this.type,
+    required this.size,
   });
 }

@@ -30,16 +30,16 @@ class Card extends StatelessWidget {
           child: isFlipped
               ? FittedBox(
                   fit: BoxFit.contain,
+                  key: uniqueKey,
                   child: Image(
                     image: AssetImage(cardBackSVGPath),
-                    key: uniqueKey,
                   ),
                 )
               : FittedBox(
                   fit: BoxFit.contain,
+                  key: uniqueKey,
                   child: Image(
                     image: AssetImage(createCardSVGPath(cardNumber)),
-                    key: uniqueKey,
                   ),
                 ),
         ),
