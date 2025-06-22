@@ -6,7 +6,7 @@ class Player {
   late PlayerID _playerID;
   late String _socketID;
   late String _name;
-  late int _point;
+  late double _point;
 
   Player({
     List<int>? drawPile,
@@ -14,7 +14,7 @@ class Player {
     PlayerID? playerID,
     String? socketID,
     String? name,
-    int? point,
+    double? point,
   }) {
     _drawPile = drawPile ?? [];
     _hand = hand ?? [];
@@ -32,7 +32,7 @@ class Player {
 
   set setSocketID(String socketID) => _socketID = socketID;
 
-  set setPoint(int point) => _point = point;
+  set setPoint(double point) => _point = point;
 
   set setPlayerID(PlayerID playerID) => _playerID = playerID;
 
@@ -46,7 +46,7 @@ class Player {
 
   String get getSocketID => _socketID;
 
-  int get getPoint => _point;
+  double get getPoint => _point;
 
   Map<String, dynamic> toJson() => {
     'hand': _hand,
@@ -62,7 +62,7 @@ class Player {
       hand: List<int>.from(json['hand']),
       drawPile: List<int>.from(json['drawPile']),
       name: json['name'] as String,
-      point: json['point'] as int,
+      point: (json['point'] as num).toDouble(),
       socketID: json['socketID'] as String,
       playerID: PlayerID.values[json['playerID']],
     );

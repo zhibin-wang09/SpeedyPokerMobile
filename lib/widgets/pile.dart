@@ -25,6 +25,6 @@ class Pile extends StatelessWidget {
             onTap: (int cardNumber) {},
             uniqueKey: uniqueKey,
           )
-        : const SizedBox.shrink();
+        : Expanded(child: const SizedBox());
   }
 }

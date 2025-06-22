@@ -1,4 +1,7 @@
+import 'dart:math';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:speedy_poker/enums/animated_card_type.dart';
 import 'package:speedy_poker/enums/destination.dart';
@@ -7,6 +10,7 @@ import 'package:speedy_poker/model/game.dart';
 import 'package:speedy_poker/model/game_response.dart';
 import 'package:speedy_poker/model/player.dart';
 import 'package:speedy_poker/model/socket.dart';
+import 'package:speedy_poker/page/home_page.dart';
 import 'package:speedy_poker/widgets/hand.dart';
 import 'package:speedy_poker/widgets/pile.dart';
 import 'package:speedy_poker/widgets/card.dart' as game_card;
@@ -37,6 +41,10 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
 
   final List<AnimatingCard> _animatingCards = [];
 
+  bool haveWinner = false;
+
+  late ConfettiController _confettiController;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +57,10 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     );
     _centerPileKeys = List.generate(centerPileNumCards, (index) => GlobalKey());
     _localPlayerKeys = List.generate(bottomRowNumCards, (index) => GlobalKey());
+    haveWinner = false;
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
   }
 
   @override
@@ -59,6 +71,53 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
 
     socketService.emit('getGameState', game.getRoomID);
     socketService.socket.on('receiveGameState', _handleReceiveGameState);
+    socketService.socket.on('result', _handleResult);
+    socketService.socket.on('endGame', _handleEndGame);
+  }
+
+  void _handleResult(dynamic json) {
+    String res = json as String;
+    if (res.toLowerCase().contains('won')) {
+      setState(() {
+        haveWinner = true;
+      });
+    }
+
+    _confettiController.play();
+
+    Fluttertoast.showToast(
+      msg: res,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: haveWinner ? Colors.green.shade100 : Colors.red.shade100,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SpeedyPoker()),
+    );
+  }
+
+  void _handleEndGame(dynamic json) {
+    String res = json as String;
+
+    Fluttertoast.showToast(
+      msg: res,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: haveWinner ? Colors.green.shade100 : Colors.red.shade100,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SpeedyPoker()),
+    );
   }
 
   void _handleReceiveGameState(dynamic json) {
@@ -178,6 +237,9 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
   @override
   void dispose() {
     socketService.socket.off('receiveGameState', _handleReceiveGameState);
+    socketService.socket.off('result', _handleResult);
+    socketService.socket.off('endGame', _handleEndGame);
+    _confettiController.dispose();
     for (var card in _animatingCards) {
       card.controller.dispose();
     }
@@ -201,6 +263,8 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
                   isFlipped: true,
                   onTap: (_) {},
                   keys: _opponentPlayerKeys,
+                  isLocalPlayer: false,
+                  points: _opponentPlayer.getPoint,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -244,6 +308,8 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
                     ]);
                   },
                   keys: _localPlayerKeys,
+                  isLocalPlayer: true,
+                  points: _localPlayer.getPoint,
                 ),
               ],
             );
@@ -273,6 +339,22 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
             },
           );
         }),
+        Align(
+          alignment: Alignment.center,
+          child: ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirection: pi / 2,
+            maxBlastForce: 5,
+            minBlastForce: 1,
+            emissionFrequency: 0.03,
+
+            // 10 paticles will pop-up at a time
+            numberOfParticles: 10,
+
+            // particles will pop-up
+            gravity: 0,
+          ),
+        ),
       ],
     );
   }
