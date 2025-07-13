@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:speedy_poker/model/game.dart';
+import 'package:speedy_poker/enums/mode.dart';
 import 'package:speedy_poker/model/socket.dart';
-import 'package:speedy_poker/page/waiting_page.dart';
+import 'package:speedy_poker/page/form_page.dart';
 
 // This is the top of the widget tree representing the overall theme for the game
 class SpeedyPoker extends StatelessWidget {
@@ -12,17 +12,20 @@ class SpeedyPoker extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Speedy Poker',
-      theme: ThemeData(scaffoldBackgroundColor: Colors.black),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       home: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Speedy Poker',
-              style: TextStyle(fontSize: 30, color: Colors.white),
-            ),
-            const SpeedyPokerHomePage(),
-          ],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Speedy Poker'.toUpperCase(),
+                style: TextStyle(fontSize: 30, color: Colors.black),
+              ),
+              SpeedyPokerHomePage(),
+            ],
+          ),
         ),
       ),
       debugShowCheckedModeBanner: false,
@@ -43,100 +46,100 @@ class SpeedyPokerHomePage extends StatefulWidget {
 // The state for SpeedyPokerHomePage widget
 // contains form, two input fields, and a submission button
 class _SpeedyPokerHomePageState extends State<SpeedyPokerHomePage> {
-  final GlobalKey<FormState> _formkey =
-      GlobalKey<FormState>(); // form key for the overall form
-  final TextEditingController roomIdController =
-      TextEditingController(); // controller to monitor input change in first input field
-  final TextEditingController nameController =
-      TextEditingController(); // controller for the second input field
+  late Mode mode;
+
+  @override
+  void initState() {
+    super.initState();
+    mode = Mode.home;
+  }
 
   @override
   void dispose() {
-    roomIdController.dispose();
-    nameController.dispose();
     super.dispose();
-  }
-
-  // factored function to modify input field attributes like hints and validator
-  Widget _inputField(
-    String hint,
-    String? Function(String?)? validator,
-    TextEditingController controller,
-  ) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(fontSize: 12, color: Colors.white),
-      ),
-      validator: validator,
-      style: TextStyle(fontSize: 12, color: Colors.white),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formkey,
-      child: Container(
+    return Container(
         margin: EdgeInsets.all(40.0),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _inputField('Room Number', (value) {
-              int? val = int.tryParse(value!);
-              if (val == null || value.isEmpty) {
-                return 'Please enter room number (Ex. 1910)';
-              } else if (val < 0) {
-                return 'Room numbers can only be positive';
-              }
-              return null;
-            }, roomIdController),
-            _inputField('Name', (value) => null, nameController),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Consumer<SocketService>(
-                builder: (context, socketService, child) {
-                  return ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStatePropertyAll(Colors.white),
+            Consumer<SocketService>(
+              builder: (context, socketService, child) {
+                return Column(
+                  children: [
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.blue),
+                      ),
+                      onPressed: () {
+                        if (mode == Mode.home) {
+                         Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SpeedyPokerFormPage(mode: Mode.create),
+                              settings: RouteSettings(name: "/home")
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'CREATE GAME',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
                     ),
-                    onPressed: () {
-                      if (_formkey.currentState!.validate()) {
-                        int roomID = int.parse(roomIdController.text);
-                        String playerName = nameController.text;
-
-                        final Game game = Provider.of<Game>(context, listen: false);
-                        game.setRoomID = roomID;
-
-                        // join the game room
-                        socketService.emit('joinGameRoom', [
-                          {'roomID': roomID, 'playerName': playerName},
-                        ]);
-
-                        SocketService().socket.on('receiveRoomID', (roomID) {
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.green),
+                      ),
+                      onPressed: () {
+                        if (mode == Mode.home) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SpeedyPokerWaitingPage(
-                                roomID: int.parse(roomID),
-                              ),
+                              builder: (context) => SpeedyPokerFormPage(mode: Mode.joinTargetRoom),
+                              settings: RouteSettings(name: "/home"),
                             ),
                           );
-                        });
-                      }
-                    },
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(fontSize: 12, color: Colors.black),
+                        }
+                      },
+                      child: const Text(
+                        'JOIN VIA CODE',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
                     ),
-                  );
-                },
-              ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.red),
+                      ),
+                      onPressed: () {
+                        if (mode == Mode.home) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SpeedyPokerFormPage(mode: Mode.joinAnyRoom),
+                              settings: RouteSettings(name: "/home")
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text(
+                        'JOIN ANY GAME',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 }

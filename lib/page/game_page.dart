@@ -67,9 +67,8 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
   void didChangeDependencies() {
     super.didChangeDependencies();
     socketService = Provider.of<SocketService>(context, listen: false);
-    game = Provider.of<Game>(context, listen: false);
 
-    socketService.emit('getGameState', game.getRoomID);
+    socketService.emit('getGameState', widget.roomID);
     socketService.socket.on('receiveGameState', _handleReceiveGameState);
     socketService.socket.on('result', _handleResult);
     socketService.socket.on('endGame', _handleEndGame);
@@ -114,10 +113,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
       fontSize: 16.0,
     );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SpeedyPoker()),
-    );
+    Navigator.popUntil(context, (route) => route.settings.name == '/home');
   }
 
   void _handleReceiveGameState(dynamic json) {
@@ -143,7 +139,9 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     if (res.playerTurn == PlayerID.def) return;
 
     _startAnimation(res.playerTurn, res.cardIndex, res.destination);
-    _startAnimationDrawToHand(res.playerTurn, res.cardIndex, res.newCard);
+    if (res.newCard != -1) {
+      _startAnimationDrawToHand(res.playerTurn, res.cardIndex, res.newCard);
+    }
   }
 
   void _startAnimation(

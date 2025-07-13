@@ -13,7 +13,7 @@ class SpeedyPokerWaitingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(scaffoldBackgroundColor: Colors.black),
+      theme: ThemeData(scaffoldBackgroundColor: Colors.white),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Center(
@@ -25,24 +25,22 @@ class SpeedyPokerWaitingPage extends StatelessWidget {
               children: <Widget>[
                 Text(
                   'Your game code is: $roomID, wait for another player to join',
-                  style: TextStyle(fontSize: 12, color: Colors.white),
+                  style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
                 Consumer<SocketService>(
-                  builder: (context, socketService, child){
+                  builder: (context, socketService, child) {
                     socketService.emit('onPlayerReady', [roomID]);
                     
-                    SocketService().socket.on('startGameSession', (_){
+                    SocketService().socket.on('startGameSession', (_) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SpeedyPokerGamePage(
-                            roomID: roomID,
-                          ),
+                          builder: (context) => SpeedyPokerGamePage(roomID: roomID),
                         ),
                       );
                     });
                     return CircularProgressIndicator();
-                }
+                  },
                 ),
               ],
             ),
