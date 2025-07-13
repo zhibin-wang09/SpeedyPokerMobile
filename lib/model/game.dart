@@ -17,6 +17,7 @@ class Game extends ChangeNotifier {
     List<int>? centerDrawPile2,
     Player? player1,
     Player? player2,
+    List<Player>? players,
     int? roomID,
   }) {
     _centerPile1 = centerPile1 ?? [];
@@ -65,9 +66,9 @@ class Game extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<int> get getCenterPil1 => _centerPile1;
+  List<int> get getCenterPile1 => _centerPile1;
 
-  List<int> get getCenterPil2 => _centerPile2;
+  List<int> get getCenterPile2 => _centerPile2;
 
   List<int> get getCenterDrawPile1 => _centerDrawPile1;
 
@@ -86,14 +87,14 @@ class Game extends ChangeNotifier {
       centerDrawPile1: List<int>.from(json['centerDrawPile1']),
       centerDrawPile2: List<int>.from(json['centerDrawPile2']),
       roomID: json['gameID'] as int,
-      player1: Player.fromJson(json['player1']),
-      player2: Player.fromJson(json['player2']),
+      player1: Player.fromJson(json['players'][1]),
+      player2: Player.fromJson(json['players'][0]),
     );
   }
 
   void updateFromGameState(Game game) {
-    _centerPile1 = List<int>.from(game.getCenterPil1);
-    _centerPile2 = List<int>.from(game.getCenterPil2);
+    _centerPile1 = List<int>.from(game.getCenterPile1);
+    _centerPile2 = List<int>.from(game.getCenterPile2);
     _centerDrawPile1 = List<int>.from(game.getCenterDrawPile1);
     _centerDrawPile2 = List<int>.from(game.getCenterDrawPile2);
     _roomID = game.getRoomID;

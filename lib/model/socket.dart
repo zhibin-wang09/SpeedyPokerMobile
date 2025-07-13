@@ -4,8 +4,8 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 class SocketService {
   static final SocketService _instance = SocketService._internal();
   late io.Socket socket;
-  static const String androidEmulator = 'http://10.0.2.2:3000';
-  static const String iosEmulator = 'http://127.0.0.1:3000';
+  static const String androidEmulator = 'http://10.0.2.2:8080';
+  static const String iosEmulator = 'http://127.0.0.1:8080';
   var logger = Logger();
 
   factory SocketService() {

@@ -63,8 +63,8 @@ class Player {
       drawPile: List<int>.from(json['drawPile']),
       name: json['name'] as String,
       point: (json['point'] as num).toDouble(),
-      socketID: json['socketID'] as String,
-      playerID: PlayerID.values[json['playerID']],
+      socketID: json['socketId'] as String,
+      playerID: PlayerID.values[json['playerId']],
     );
   }
 }
