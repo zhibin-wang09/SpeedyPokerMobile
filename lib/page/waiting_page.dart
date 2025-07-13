@@ -29,9 +29,9 @@ class SpeedyPokerWaitingPage extends StatelessWidget {
                 ),
                 Consumer<SocketService>(
                   builder: (context, socketService, child) {
-                    socketService.emit('onPlayerReady', [roomID]);
+                    socketService.emit('user:ready', [roomID]);
                     
-                    SocketService().socket.on('startGameSession', (_) {
+                    SocketService().socket.on('game:start', (_) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

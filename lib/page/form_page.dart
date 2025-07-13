@@ -132,12 +132,12 @@ class _SpeedyPokerFormPageState extends State<SpeedyPokerFormPage> {
                                         .validate()) {
                                       String playerName = nameController.text;
 
-                                      socketService.emit('createGameRoom', [
-                                        [playerName],
+                                      socketService.emit('user:create', [
+                                        playerName,
                                       ]);
 
                                       SocketService().socket.on(
-                                        'receiveRoomID',
+                                        'user:joined',
                                         (roomID) {
                                           Navigator.push(
                                             context,
@@ -168,12 +168,13 @@ class _SpeedyPokerFormPageState extends State<SpeedyPokerFormPage> {
                                       String playerName = nameController.text;
 
                                       // join the game room
-                                      socketService.emit('joinGameRoom', [
-                                        [roomID, playerName],
+                                      socketService.emit('user:join', [
+                                        roomID,
+                                        playerName,
                                       ]);
 
                                       SocketService().socket.on(
-                                        'receiveRoomID',
+                                        'user:joined',
                                         (roomID) {
                                           Navigator.push(
                                             context,
@@ -200,12 +201,12 @@ class _SpeedyPokerFormPageState extends State<SpeedyPokerFormPage> {
                                       String playerName = nameController.text;
 
                                       // join the game room
-                                      socketService.emit('joinAnyGameRoom', [
-                                        [playerName],
+                                      socketService.emit('user:join_any', [
+                                        playerName,
                                       ]);
 
                                       SocketService().socket.on(
-                                        'receiveRoomID',
+                                        'user:joined',
                                         (roomID) {
                                           Navigator.push(
                                             context,
