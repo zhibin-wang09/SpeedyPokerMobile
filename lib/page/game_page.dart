@@ -28,7 +28,7 @@ class SpeedyPokerGamePage extends StatefulWidget {
 class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     with TickerProviderStateMixin {
   late SocketService socketService;
-  late Game game;
+  late Game _game;
 
   List<GlobalKey> _opponentPlayerKeys = [];
   List<GlobalKey> _centerPileKeys = [];
@@ -61,6 +61,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),
     );
+    _game = Game();
   }
 
   @override
@@ -68,10 +69,10 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     super.didChangeDependencies();
     socketService = Provider.of<SocketService>(context, listen: false);
 
-    socketService.emit('getGameState', widget.roomID);
-    socketService.socket.on('receiveGameState', _handleReceiveGameState);
-    socketService.socket.on('result', _handleResult);
-    socketService.socket.on('endGame', _handleEndGame);
+    socketService.emit('game:get', widget.roomID);
+    socketService.socket.on('game:update', _handleReceiveGameState);
+    socketService.socket.on('game:result', _handleResult);
+    socketService.socket.on('game:disconnect', _handleEndGame);
   }
 
   void _handleResult(dynamic json) {
@@ -120,16 +121,18 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     if (!mounted || json == null) return;
     final res = UpdatedGameResponse.fromJson(json);
 
-    game.updateFromGameState(res.game);
+    setState(() {
+      _game.updateFromGameState(res.game);
+    });
 
-    final localPlayer = game.getPlayer1.getSocketID == socketService.socket.id
-        ? game.getPlayer1
-        : game.getPlayer2;
+    final localPlayer = _game.getPlayer1.getSocketID == socketService.socket.id
+        ? _game.getPlayer1
+        : _game.getPlayer2;
 
     final opponentPlayer =
-        game.getPlayer1.getSocketID == socketService.socket.id
-        ? game.getPlayer2
-        : game.getPlayer1;
+        _game.getPlayer1.getSocketID == socketService.socket.id
+        ? _game.getPlayer2
+        : _game.getPlayer1;
 
     setState(() {
       _localPlayer = localPlayer;
@@ -234,9 +237,9 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
 
   @override
   void dispose() {
-    socketService.socket.off('receiveGameState', _handleReceiveGameState);
-    socketService.socket.off('result', _handleResult);
-    socketService.socket.off('endGame', _handleEndGame);
+    socketService.socket.off('game:update', _handleReceiveGameState);
+    socketService.socket.off('game:result', _handleResult);
+    socketService.socket.off('game:disconnect', _handleEndGame);
     _confettiController.dispose();
     for (var card in _animatingCards) {
       card.controller.dispose();
@@ -249,69 +252,65 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     return Stack(
       key: _stackKey,
       children: [
-        Consumer<Game>(
-          builder: (context, game, child) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Hand(
+              hand: _opponentPlayer.getHand,
+              drawPile: _opponentPlayer.getDrawPile,
+              padding: 10,
+              isFlipped: true,
+              onTap: (_) {},
+              keys: _opponentPlayerKeys,
+              isLocalPlayer: false,
+              points: _opponentPlayer.getPoint,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Hand(
-                  hand: _opponentPlayer.getHand,
-                  drawPile: _opponentPlayer.getDrawPile,
-                  padding: 10,
+                Pile(
+                  cards: _game.getCenterDrawPile1,
+                  padding: 8,
                   isFlipped: true,
-                  onTap: (_) {},
-                  keys: _opponentPlayerKeys,
-                  isLocalPlayer: false,
-                  points: _opponentPlayer.getPoint,
+                  uniqueKey: _centerPileKeys[0],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Pile(
-                      cards: game.getCenterDrawPile1,
-                      padding: 8,
-                      isFlipped: true,
-                      uniqueKey: _centerPileKeys[0],
-                    ),
-                    Pile(
-                      cards: game.getCenterPil1,
-                      padding: 8,
-                      isFlipped: false,
-                      uniqueKey: _centerPileKeys[2],
-                    ),
-                    Pile(
-                      cards: game.getCenterPil2,
-                      padding: 8,
-                      isFlipped: false,
-                      uniqueKey: _centerPileKeys[3],
-                    ),
-                    Pile(
-                      cards: game.getCenterDrawPile2,
-                      padding: 8,
-                      isFlipped: true,
-                      uniqueKey: _centerPileKeys[1],
-                    ),
-                  ],
-                ),
-                Hand(
-                  hand: _localPlayer.getHand,
-                  drawPile: _localPlayer.getDrawPile,
-                  padding: 10,
+                Pile(
+                  cards: _game.getCenterPile1,
+                  padding: 8,
                   isFlipped: false,
-                  onTap: (int cardNumber) {
-                    socketService.emit('playCard', [
-                      cardNumber,
-                      game.getRoomID,
-                      _localPlayer.toJson(),
-                    ]);
-                  },
-                  keys: _localPlayerKeys,
-                  isLocalPlayer: true,
-                  points: _localPlayer.getPoint,
+                  uniqueKey: _centerPileKeys[2],
+                ),
+                Pile(
+                  cards: _game.getCenterPile2,
+                  padding: 8,
+                  isFlipped: false,
+                  uniqueKey: _centerPileKeys[3],
+                ),
+                Pile(
+                  cards: _game.getCenterDrawPile2,
+                  padding: 8,
+                  isFlipped: true,
+                  uniqueKey: _centerPileKeys[1],
                 ),
               ],
-            );
-          },
+            ),
+            Hand(
+              hand: _localPlayer.getHand,
+              drawPile: _localPlayer.getDrawPile,
+              padding: 10,
+              isFlipped: false,
+              onTap: (int cardNumber) {
+                socketService.emit('game:move', {
+                  "card": cardNumber,
+                  "gameId": _game.getRoomID,
+                  "playerId": _localPlayer.getPlayerID.index,
+                });
+              },
+              keys: _localPlayerKeys,
+              isLocalPlayer: true,
+              points: _localPlayer.getPoint,
+            ),
+          ],
         ),
         ..._animatingCards.map((animCard) {
           return AnimatedBuilder(

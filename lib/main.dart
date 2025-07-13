@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speedy_poker/page/home_page.dart';
-import 'model/game.dart';
 import 'model/socket.dart';
 
 void main() {
@@ -10,7 +9,6 @@ void main() {
     MultiProvider(
       providers: [
         Provider(create: (_) => socket),
-        ChangeNotifierProvider<Game>(create: (_) => Game()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
