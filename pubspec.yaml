@@ -40,6 +40,7 @@ dependencies:
   logger: ^2.5.0
   confetti: ^0.8.0
   fluttertoast: ^8.2.12
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -96,3 +97,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  image_path: "assets/icons/icon.png"
+  android: true
+  ios: true
