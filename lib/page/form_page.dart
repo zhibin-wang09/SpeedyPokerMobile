@@ -4,6 +4,7 @@ import 'package:speedy_poker/enums/mode.dart';
 import 'package:speedy_poker/model/socket.dart';
 import 'package:speedy_poker/page/waiting_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:speedy_poker/util/helper_function.dart';
 
 class SpeedyPokerFormPage extends StatefulWidget {
   const SpeedyPokerFormPage({super.key, required this.mode});
@@ -40,8 +41,8 @@ class _SpeedyPokerFormPageState extends State<SpeedyPokerFormPage> {
 
   @override
   void dispose() {
+    socketService.socket.off("user:joined", _handleUserJoin);
     socketService.socket.off("game:error", _handleGameError);
-    socketService.socket.on("user:joined", _handleUserJoin);
     roomIdController.dispose();
     nameController.dispose();
     super.dispose();
@@ -58,18 +59,15 @@ class _SpeedyPokerFormPageState extends State<SpeedyPokerFormPage> {
   }
 
   void _handleGameError(dynamic json) {
-    String errMessage = json as String;
-    Fluttertoast.showToast(
-      msg: errMessage,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 2,
-      backgroundColor: const Color.fromARGB(255, 229, 104, 116),
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
+    String errorMessage = json as String;
 
-    Navigator.popUntil(context, (route) => route.settings.name == '/home');
+    showErrorAndBack(
+      context,
+      errorMessage,
+      ToastGravity.BOTTOM,
+      const Color.fromARGB(255, 229, 104, 116),
+      Colors.white,
+    );
   }
 
   Widget _inputField(

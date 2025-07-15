@@ -1,5 +1,3 @@
-import 'dart:math';
-import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +8,7 @@ import 'package:speedy_poker/model/game.dart';
 import 'package:speedy_poker/model/game_response.dart';
 import 'package:speedy_poker/model/player.dart';
 import 'package:speedy_poker/model/socket.dart';
-import 'package:speedy_poker/page/home_page.dart';
+import 'package:speedy_poker/util/helper_function.dart';
 import 'package:speedy_poker/widgets/hand.dart';
 import 'package:speedy_poker/widgets/pile.dart';
 import 'package:speedy_poker/widgets/card.dart' as game_card;
@@ -43,8 +41,6 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
 
   bool haveWinner = false;
 
-  late ConfettiController _confettiController;
-
   @override
   void initState() {
     super.initState();
@@ -58,9 +54,6 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     _centerPileKeys = List.generate(centerPileNumCards, (index) => GlobalKey());
     _localPlayerKeys = List.generate(bottomRowNumCards, (index) => GlobalKey());
     haveWinner = false;
-    _confettiController = ConfettiController(
-      duration: const Duration(seconds: 3),
-    );
     _game = Game();
   }
 
@@ -73,6 +66,19 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     socketService.socket.on('game:update', _handleReceiveGameState);
     socketService.socket.on('game:result', _handleResult);
     socketService.socket.on('game:disconnect', _handleEndGame);
+    socketService.socket.on("game:error", _handleGameError);
+  }
+
+  void _handleGameError(dynamic json) {
+    String errorMessage = json as String;
+
+    showErrorAndBack(
+      context,
+      errorMessage,
+      ToastGravity.BOTTOM,
+      const Color.fromARGB(255, 229, 104, 116),
+      Colors.white,
+    );
   }
 
   void _handleResult(dynamic json) {
@@ -83,38 +89,27 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
       });
     }
 
-    _confettiController.play();
-
-    Fluttertoast.showToast(
-      msg: res,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: haveWinner ? Colors.green.shade100 : Colors.red.shade100,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-
-    Navigator.push(
+    showErrorAndBack(
       context,
-      MaterialPageRoute(builder: (context) => SpeedyPoker()),
+      res,
+      ToastGravity.BOTTOM,
+      haveWinner
+          ? const Color.fromARGB(255, 106, 235, 110)
+          : const Color.fromARGB(255, 224, 117, 128),
+      Colors.white,
     );
   }
 
   void _handleEndGame(dynamic json) {
     String res = json as String;
 
-    Fluttertoast.showToast(
-      msg: res,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: haveWinner ? Colors.green.shade100 : Colors.red.shade100,
-      textColor: Colors.white,
-      fontSize: 16.0,
+    showErrorAndBack(
+      context,
+      res,
+      ToastGravity.BOTTOM,
+      const Color.fromARGB(255, 229, 104, 116),
+      Colors.white,
     );
-
-    Navigator.popUntil(context, (route) => route.settings.name == '/home');
   }
 
   void _handleReceiveGameState(dynamic json) {
@@ -240,7 +235,7 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
     socketService.socket.off('game:update', _handleReceiveGameState);
     socketService.socket.off('game:result', _handleResult);
     socketService.socket.off('game:disconnect', _handleEndGame);
-    _confettiController.dispose();
+    socketService.socket.off('game:error', _handleGameError);
     for (var card in _animatingCards) {
       card.controller.dispose();
     }
@@ -336,22 +331,6 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
             },
           );
         }),
-        Align(
-          alignment: Alignment.center,
-          child: ConfettiWidget(
-            confettiController: _confettiController,
-            blastDirection: pi / 2,
-            maxBlastForce: 5,
-            minBlastForce: 1,
-            emissionFrequency: 0.03,
-
-            // 10 paticles will pop-up at a time
-            numberOfParticles: 10,
-
-            // particles will pop-up
-            gravity: 0,
-          ),
-        ),
       ],
     );
   }
