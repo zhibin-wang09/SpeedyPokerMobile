@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:speedy_poker/constants.dart';
-import 'package:speedy_poker/logic/encoding_conversion.dart';
+import 'package:speedy_poker/util/encoding_conversion.dart';
 
 class Card extends StatelessWidget {
   final int cardNumber;
