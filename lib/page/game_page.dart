@@ -244,94 +244,108 @@ class _SpeedyPokerGamePageState extends State<SpeedyPokerGamePage>
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      key: _stackKey,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Hand(
-              hand: _opponentPlayer.getHand,
-              drawPile: _opponentPlayer.getDrawPile,
-              padding: 10,
-              isFlipped: true,
-              onTap: (_) {},
-              keys: _opponentPlayerKeys,
-              isLocalPlayer: false,
-              points: _opponentPlayer.getPoint,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Pile(
-                  cards: _game.getCenterDrawPile1,
-                  padding: 8,
-                  isFlipped: true,
-                  uniqueKey: _centerPileKeys[0],
-                ),
-                Pile(
-                  cards: _game.getCenterPile1,
-                  padding: 8,
-                  isFlipped: false,
-                  uniqueKey: _centerPileKeys[2],
-                ),
-                Pile(
-                  cards: _game.getCenterPile2,
-                  padding: 8,
-                  isFlipped: false,
-                  uniqueKey: _centerPileKeys[3],
-                ),
-                Pile(
-                  cards: _game.getCenterDrawPile2,
-                  padding: 8,
-                  isFlipped: true,
-                  uniqueKey: _centerPileKeys[1],
-                ),
-              ],
-            ),
-            Hand(
-              hand: _localPlayer.getHand,
-              drawPile: _localPlayer.getDrawPile,
-              padding: 10,
-              isFlipped: false,
-              onTap: (int cardNumber) {
-                socketService.emit('game:move', {
-                  "card": cardNumber,
-                  "gameId": _game.getRoomID,
-                  "playerId": _localPlayer.getPlayerID.index,
-                });
-              },
-              keys: _localPlayerKeys,
-              isLocalPlayer: true,
-              points: _localPlayer.getPoint,
-            ),
-          ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/poker_table_background.jpg'),
+            fit: BoxFit.cover,
+          ),
         ),
-        ..._animatingCards.map((animCard) {
-          return AnimatedBuilder(
-            animation: animCard.animation,
-            builder: (context, child) {
-              return Positioned(
-                left: animCard.animation.value.dx,
-                top: animCard.animation.value.dy,
-                child: SizedBox(
-                  width: animCard.size.width,
-                  height: animCard.size.height,
-                  child: game_card.Card(
-                    cardNumber: animCard.cardNumber,
-                    padding: 0,
-                    isFlipped: animCard.type == AnimateCardType.draw
-                        ? true
-                        : false,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: Stack(
+            key: _stackKey,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Hand(
+                    hand: _opponentPlayer.getHand,
+                    drawPile: _opponentPlayer.getDrawPile,
+                    padding: 10,
+                    isFlipped: true,
                     onTap: (_) {},
-                    useExpanded: false,
+                    keys: _opponentPlayerKeys,
+                    isLocalPlayer: false,
+                    points: _opponentPlayer.getPoint,
                   ),
-                ),
-              );
-            },
-          );
-        }),
-      ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Pile(
+                        cards: _game.getCenterDrawPile1,
+                        padding: 8,
+                        isFlipped: true,
+                        uniqueKey: _centerPileKeys[0],
+                      ),
+                      Pile(
+                        cards: _game.getCenterPile1,
+                        padding: 8,
+                        isFlipped: false,
+                        uniqueKey: _centerPileKeys[2],
+                      ),
+                      Pile(
+                        cards: _game.getCenterPile2,
+                        padding: 8,
+                        isFlipped: false,
+                        uniqueKey: _centerPileKeys[3],
+                      ),
+                      Pile(
+                        cards: _game.getCenterDrawPile2,
+                        padding: 8,
+                        isFlipped: true,
+                        uniqueKey: _centerPileKeys[1],
+                      ),
+                    ],
+                  ),
+                  Hand(
+                    hand: _localPlayer.getHand,
+                    drawPile: _localPlayer.getDrawPile,
+                    padding: 10,
+                    isFlipped: false,
+                    onTap: (int cardNumber) {
+                      socketService.emit('game:move', {
+                        "card": cardNumber,
+                        "gameId": _game.getRoomID,
+                        "playerId": _localPlayer.getPlayerID.index,
+                      });
+                    },
+                    keys: _localPlayerKeys,
+                    isLocalPlayer: true,
+                    points: _localPlayer.getPoint,
+                  ),
+                ],
+              ),
+              ..._animatingCards.map((animCard) {
+                return AnimatedBuilder(
+                  animation: animCard.animation,
+                  builder: (context, child) {
+                    return Positioned(
+                      left: animCard.animation.value.dx,
+                      top: animCard.animation.value.dy,
+                      child: SizedBox(
+                        width: animCard.size.width,
+                        height: animCard.size.height,
+                        child: game_card.Card(
+                          cardNumber: animCard.cardNumber,
+                          padding: 0,
+                          isFlipped: animCard.type == AnimateCardType.draw
+                              ? true
+                              : false,
+                          onTap: (_) {},
+                          useExpanded: false,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
