@@ -2,18 +2,18 @@
 
 Use your speed and accuracy to beat your opponent!
 
-## Getting Started
+# Demo
 
-This project is a starting point for a Flutter application.
+## Join Any Game
+![join any game](./assets/demo/join_any_game.gif)
+The above demo illustrate how to join any remote games
 
-A few resources to get you started if this is your first Flutter project:
+## Create Game
+![create game](./assets/demo/create_game.gif)
+This demo shows how to join any existing game room and display error when game doesn't exist
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
+## Game Play
+![game play](./assets/demo/game_play.gif)
+This demo shows how the game is played
 
 Icon is attributed to: [Card game icons created by mangsaabguru - Flaticon]("https://www.flaticon.com/free-icons/card-game")
