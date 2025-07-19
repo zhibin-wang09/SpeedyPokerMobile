@@ -2,6 +2,13 @@
 
 Use your speed and accuracy to beat your opponent!
 
+# Test The Game
+- Have Flutter and dart installed
+- For android devices have android studio installed
+- For IOS devices have Xcode installed
+- Start emulators
+- Run command `flutter run`
+
 # Demo
 
 ## Join Any Game
